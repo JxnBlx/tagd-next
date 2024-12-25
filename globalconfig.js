@@ -10,6 +10,7 @@ const globalconfig = {
 		items: "/items",
 		posts: "/posts",
 		users: "/users",
+		signout: "/auth/signout",
 	},
 };
 

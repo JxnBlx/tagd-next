@@ -14,15 +14,14 @@ export default function AuthPage() {
 
 		try {
 			const resp = await handleSignup(rawFormData.email, rawFormData.password);
-			if (resp.ok) {
-				redirect(globalconfig.pages.login + "?u=" + rawFormData.email);
-			} else {
+			if (!resp.ok) {
 				const data = await resp.json();
-				return { message: data.error };
+				return { message: JSON.stringify(data) };
 			}
-		} catch {
+		} catch (error) {
 			return { message: "An error occurred during signup" };
 		}
+		redirect(globalconfig.pages.login + "?u=" + rawFormData.email);
 	}
 
 	return <AuthForm type={"Sign Up"} action={signup} />;

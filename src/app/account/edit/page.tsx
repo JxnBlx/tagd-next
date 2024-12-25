@@ -23,6 +23,7 @@ async function submitAccountData(prevState: any, formData: FormData) {
 }
 
 async function EditAccountData() {
+	"use server";
 	const res = await getAccountData();
 
 	if (!res.ok && res.status !== 404) {

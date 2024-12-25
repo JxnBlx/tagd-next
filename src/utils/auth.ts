@@ -1,3 +1,4 @@
+"use server";
 import { cookies } from "next/headers";
 import api_config from "../../globalconfig";
 
@@ -18,10 +19,7 @@ export const checkLoginStatus = async () => {
 			const result = await refreshToken();
 
 			if (!result.ok) {
-				await fetch(`${API_URL}/auth/signout`, {
-					method: "POST",
-					credentials: "include", // Include cookies in the request
-				});
+				handleLogout();
 
 				return response;
 			}
@@ -57,15 +55,12 @@ export const refreshToken = async () => {
 			},
 		});
 
-		if (!response.ok) {
-			console.error("Token refresh error:", (await response.json()).error);
-			return response;
-		} else {
-			return response;
-		}
+		return response;
 	} catch (error) {
-		console.error("Token refresh error:", error);
-		return new Response(null, { status: 400 });
+		return new Response(JSON.stringify({ error: error.message || "Refresh token error" }), {
+			status: 400,
+			headers: { "Content-Type": "application/json" },
+		});
 	}
 };
 
@@ -109,17 +104,9 @@ export const handleSignup = async (email: string, password: string) => {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({ email, password }),
-			credentials: "include", // Include cookies in the request
 		});
 
-		if (!response.ok) {
-			const response = new Response(JSON.stringify({ error: error.message || "Signup error" }), {
-				status: 400,
-				headers: { "Content-Type": "application/json" },
-			});
-		} else {
-			return response;
-		}
+		return response;
 	} catch (error) {
 		const response = new Response(JSON.stringify({ error: error.message || "Signup error" }), {
 			status: 400,
@@ -135,10 +122,19 @@ export const handleSignup = async (email: string, password: string) => {
 */
 export const handleLogout = async () => {
 	try {
+		const cookieStore = await cookies();
+
 		const response = await fetch(`${API_URL}/auth/signout`, {
 			method: "POST",
-			credentials: "include", // Include cookies in the request
+			headers: {
+				Cookie: cookieStore
+					.getAll()
+					.map((cookie) => `${cookie.name}=${cookie.value}`)
+					.join("; "),
+			},
 		});
+		cookieStore.delete("accessToken");
+		cookieStore.delete("refreshToken");
 
 		if (!response.ok) {
 			const data = await response.json();

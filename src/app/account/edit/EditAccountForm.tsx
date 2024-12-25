@@ -11,8 +11,10 @@ export default function EditAccountForm({ accountData, action }: { accountData: 
 	const [state, formAction, pending] = useActionState(action, initialState);
 
 	useEffect(() => {
-		if (accountData) {
+		if (accountData.username) {
 			setUsername(accountData.username);
+		}
+		if (accountData.bio) {
 			setBio(accountData.bio);
 		}
 	}, [accountData]);

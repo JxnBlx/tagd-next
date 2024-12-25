@@ -1,3 +1,4 @@
+"use server";
 import api_config from "../../globalconfig";
 import { refreshToken } from "./auth";
 import { cookies } from "next/headers";
@@ -19,18 +20,42 @@ export const getAccountData = async () => {
 			headers: cookieHeader,
 		});
 
-		if (!response.ok) {
-			const res = await refreshToken();
-			if (!res.ok) {
-				return response;
+		if (response.status === 402) {
+			const cookieResp = await refreshToken();
+			const newCookies = await cookieResp.json();
+
+			const resp = await fetch(`${API_URL}/account`, {
+				method: "GET",
+				headers: {
+					accessToken: newCookies.accessToken,
+					refreshToken: newCookies.refreshToken,
+				},
+			});
+
+			if (resp.ok) {
+				const accountData = await resp.json();
+				return new Response(
+					JSON.stringify({
+						...accountData,
+						cookies: {
+							accessToken: newCookies.accessToken,
+							refreshToken: newCookies.refreshToken,
+						},
+					}),
+					{
+						status: resp.status,
+						headers: {
+							"Content-Type": "application/json",
+							...resp.headers,
+						},
+					}
+				);
 			} else {
-				return await fetch(`${API_URL}/account`, {
-					method: "GET",
-					headers: cookieHeader,
-				});
+				return resp;
 			}
+		} else {
+			return response;
 		}
-		return response;
 	} catch (error) {
 		return new Response("Account data fetch error" + error, { status: 400 });
 	}
