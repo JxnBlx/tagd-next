@@ -77,8 +77,10 @@ export const handleLogin = async (email: string, password: string) => {
 
 		return response;
 	} catch (error) {
-		console.error("Login error:", error);
-		const response = new Response(JSON.stringify({ error: "Login error" }), { status: 400, headers: { "Content-Type": "application/json" } });
+		const response = new Response(JSON.stringify({ error: error.message || "Login error" }), {
+			status: 400,
+			headers: { "Content-Type": "application/json" },
+		});
 		return response;
 	}
 };
@@ -107,8 +109,10 @@ export const handleSignup = async (email: string, password: string) => {
 			return response;
 		}
 	} catch (error) {
-		console.error("Signup error:", error);
-		const response = new Response(JSON.stringify({ error: "Login error" }), { status: 400, headers: { "Content-Type": "application/json" } });
+		const response = new Response(JSON.stringify({ error: error.message || "Signup error" }), {
+			status: 400,
+			headers: { "Content-Type": "application/json" },
+		});
 		return response;
 	}
 };

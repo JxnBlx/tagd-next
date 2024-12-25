@@ -1,79 +1,35 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import config from "../../../config";
-import { handleLogin, handleSignup } from "@/utils/auth";
 import { useSearchParams } from "next/navigation";
+import { useActionState } from "react";
 
-interface AuthProps {
-	type: string;
-}
+const initialState = {
+	message: "",
+};
 
-const AuthForm: React.FC<AuthProps> = ({ type }) => {
-	const router = useRouter();
-	const [email, setEmail] = useState("");
-	const [password, setPassword] = useState("");
-	const [error, setError] = useState("");
-	const [loading, setLoading] = useState(false);
+export function AuthForm({ action, type }) {
 	const searchParams = useSearchParams();
 	const emailParam = searchParams.get("u") || "";
+
+	const [email, setEmail] = useState("");
+	const [password, setPassword] = useState("");
+
+	const [state, formAction, pending] = useActionState(action, initialState);
 
 	useEffect(() => {
 		if (emailParam) {
 			setEmail(emailParam);
 		}
-	}, [emailParam, type]);
-
-	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-		if (type === "Login") {
-			login(e);
-		} else {
-			signup(e);
-		}
-	};
-
-	const login = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		setLoading(true);
-		try {
-			const resp = await handleLogin(email, password);
-			if (resp.ok) {
-				router.push("/account");
-			} else {
-				const data = await resp.json();
-				setError(data.error);
-			}
-		} catch {
-			// setError(err.message);
-			setError("An error occurred during login");
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	const signup = async (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault();
-		setLoading(true);
-		try {
-			const resp = await handleSignup(email, password);
-			if (resp.ok) {
-				router.push(config.pages.login + "?u=" + email);
-			} else {
-				const data = await resp.json();
-				setError(data.error);
-			}
-		} catch {
-			setError("An error occurred during signup");
-		} finally {
-			setLoading(false);
-		}
-	};
+	}, [emailParam]);
 
 	return (
-		<form className="custom-form" onSubmit={handleSubmit}>
+		<form className="custom-form" action={formAction}>
 			<h2 className="title">{type}</h2>
 			<input
 				id="email"
+				name="email"
 				className="edit-field"
 				placeholder="Email"
 				type="email"
@@ -83,6 +39,7 @@ const AuthForm: React.FC<AuthProps> = ({ type }) => {
 			/>
 			<input
 				id="password"
+				name="password"
 				className="edit-field"
 				placeholder="Password"
 				type="password"
@@ -90,9 +47,9 @@ const AuthForm: React.FC<AuthProps> = ({ type }) => {
 				onChange={(e) => setPassword(e.target.value)}
 				required
 			/>
-			{error && <p className="error-message">{error}</p>}
-			<button type="submit" className="submit-button" disabled={loading}>
-				{loading ? "Loading..." : type}
+			{<p className="error-message">{state?.message}</p>}
+			<button type="submit" className="submit-button" disabled={pending}>
+				{pending ? "Loading..." : type}
 			</button>
 			<div className="subtext">
 				<p>Don't have an account?</p>
@@ -102,6 +59,6 @@ const AuthForm: React.FC<AuthProps> = ({ type }) => {
 			</div>
 		</form>
 	);
-};
+}
 
 export default AuthForm;
