@@ -1,4 +1,4 @@
-const config = {
+const globalconfig = {
 	API_URL: "http://localhost:3001/api/v1",
 	PORT: 3000,
 	pages: {
@@ -13,4 +13,4 @@ const config = {
 	},
 };
 
-module.exports = config;
+module.exports = globalconfig;

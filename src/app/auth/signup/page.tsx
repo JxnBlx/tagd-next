@@ -1,7 +1,7 @@
 import { handleSignup } from "@/utils/auth";
 import AuthForm from "../AuthForm";
 import { redirect } from "next/navigation";
-import config from "../../../../config";
+import globalconfig from "../../../../globalconfig";
 
 export default function AuthPage() {
 	async function signup(prevState: any, formData: FormData) {
@@ -15,7 +15,7 @@ export default function AuthPage() {
 		try {
 			const resp = await handleSignup(rawFormData.email, rawFormData.password);
 			if (resp.ok) {
-				redirect(config.pages.login + "?u=" + rawFormData.email);
+				redirect(globalconfig.pages.login + "?u=" + rawFormData.email);
 			} else {
 				const data = await resp.json();
 				return { message: data.error };

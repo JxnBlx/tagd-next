@@ -1,4 +1,5 @@
-import api_config from "../../config";
+import { cookies } from "next/headers";
+import api_config from "../../globalconfig";
 
 const API_URL = api_config.API_URL;
 
@@ -16,7 +17,12 @@ export const checkLoginStatus = async () => {
 		if (response.status === 400) {
 			const result = await refreshToken();
 
-			if (result == null) {
+			if (!result.ok) {
+				await fetch(`${API_URL}/auth/signout`, {
+					method: "POST",
+					credentials: "include", // Include cookies in the request
+				});
+
 				return response;
 			}
 
@@ -40,9 +46,15 @@ export const checkLoginStatus = async () => {
 */
 export const refreshToken = async () => {
 	try {
+		const cookieStore = await cookies();
 		const response = await fetch(`${API_URL}/auth/refresh-token`, {
 			method: "POST",
-			credentials: "include", // Include cookies in the request
+			headers: {
+				Cookie: cookieStore
+					.getAll()
+					.map((cookie) => `${cookie.name}=${cookie.value}`)
+					.join("; "),
+			},
 		});
 
 		if (!response.ok) {
@@ -51,10 +63,9 @@ export const refreshToken = async () => {
 		} else {
 			return response;
 		}
-		return response;
 	} catch (error) {
 		console.error("Token refresh error:", error);
-		return null;
+		return new Response(null, { status: 400 });
 	}
 };
 
@@ -72,7 +83,6 @@ export const handleLogin = async (email: string, password: string) => {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({ email, password }),
-			credentials: "include", // Include cookies in the request
 		});
 
 		return response;
@@ -103,8 +113,10 @@ export const handleSignup = async (email: string, password: string) => {
 		});
 
 		if (!response.ok) {
-			const data = await response.json();
-			throw new Error(data.error);
+			const response = new Response(JSON.stringify({ error: error.message || "Signup error" }), {
+				status: 400,
+				headers: { "Content-Type": "application/json" },
+			});
 		} else {
 			return response;
 		}
@@ -130,7 +142,7 @@ export const handleLogout = async () => {
 
 		if (!response.ok) {
 			const data = await response.json();
-			throw new Error(data.error);
+			return false;
 		}
 
 		return true;

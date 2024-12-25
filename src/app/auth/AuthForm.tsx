@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 // import { useRouter } from "next/navigation";
-import config from "../../../config";
+import globalconfig from "../../../globalconfig";
 import { useSearchParams } from "next/navigation";
 import { useActionState } from "react";
 
@@ -53,7 +53,7 @@ export function AuthForm({ action, type }) {
 			</button>
 			<div className="subtext">
 				<p>Don't have an account?</p>
-				<a className="toggle-form" href={type === "Login" ? config.pages.signup : config.pages.login}>
+				<a className="toggle-form" href={type === "Login" ? globalconfig.pages.signup : globalconfig.pages.login}>
 					{type === "Login" ? "Sign Up" : "Login"}
 				</a>
 			</div>
