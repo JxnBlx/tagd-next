@@ -1,7 +1,9 @@
-export default function AccountPageHeader() {
+"use server";
+
+export default async function AccountPageHeader({ text }: { text: string }) {
 	return (
 		<div>
-			<h1>Account</h1>
+			<h1>{text}</h1>
 		</div>
 	);
 }

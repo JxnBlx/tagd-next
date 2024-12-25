@@ -5,10 +5,18 @@ import { cookies } from "next/headers";
 const API_URL = api_config.API_URL;
 
 export const getAccountData = async () => {
+	const cookieStore = await cookies();
+	const cookieHeader = {
+		Cookie: cookieStore
+			.getAll()
+			.map((cookie) => `${cookie.name}=${cookie.value}`)
+			.join("; "),
+	};
+
 	try {
 		const response = await fetch(`${API_URL}/account`, {
 			method: "GET",
-			credentials: "include", // Include cookies in the request
+			headers: cookieHeader,
 		});
 
 		if (!response.ok) {
@@ -16,15 +24,9 @@ export const getAccountData = async () => {
 			if (!res.ok) {
 				return response;
 			} else {
-				const cookieStore = await cookies();
 				return await fetch(`${API_URL}/account`, {
 					method: "GET",
-					headers: {
-						Cookie: cookieStore
-							.getAll()
-							.map((cookie) => `${cookie.name}=${cookie.value}`)
-							.join("; "),
-					},
+					headers: cookieHeader,
 				});
 			}
 		}
@@ -36,11 +38,16 @@ export const getAccountData = async () => {
 
 export const editAccount = async (username: string, bio: string) => {
 	try {
+		const cookieStore = await cookies();
 		const response = await fetch(`${API_URL}/account`, {
 			method: "POST",
 			credentials: "include", // Include cookies in the request
 			headers: {
 				"Content-Type": "application/json",
+				Cookie: cookieStore
+					.getAll()
+					.map((cookie) => `${cookie.name}=${cookie.value}`)
+					.join("; "),
 			},
 			body: JSON.stringify({ username: username, bio: bio }),
 		});

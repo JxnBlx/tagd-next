@@ -7,15 +7,17 @@ import { Suspense } from "react";
 async function AccountData() {
 	const res = await getAccountData();
 
-	if (!res.ok) {
+	const accountData = await res.json();
+	if (res.status === 404) {
+		redirect(globalconfig.pages.account + "/edit");
+	} else if (!res.ok) {
 		redirect(globalconfig.pages.login);
 	}
-
-	const accountData = await res.json();
 
 	return (
 		<div>
 			<pre>{JSON.stringify(accountData, null, 2)}</pre>
+			<a href="/account/edit">Edit Account</a>
 		</div>
 	);
 }
@@ -23,7 +25,7 @@ async function AccountData() {
 export default function AccountPage() {
 	return (
 		<>
-			<AccountPageHeader />
+			<AccountPageHeader text="Account" />
 			<Suspense fallback={<div>Loading account data...</div>}>
 				<AccountData />
 			</Suspense>
