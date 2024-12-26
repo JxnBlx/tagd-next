@@ -13,15 +13,18 @@ async function AccountData() {
 	if (res.status === 404) {
 		redirect(globalconfig.pages.account + "/edit");
 	} else if (!res.ok) {
-		redirect(globalconfig.pages.signout);
+		setTimeout(() => {
+			redirect(globalconfig.pages.signout);
+		}, 2000);
+		return (await res.json()).error;
 	}
 
 	return (
 		<div>
-			<>{accountData.cookies ? <UpdateCookies newCookies={accountData.cookies} /> : null}</>
 			<pre>{JSON.stringify(accountData, null, 2)}</pre>
 			<a href="/account/edit">Edit Account</a>
 			<a href="/auth/signout">Signout</a>
+			<>{accountData.cookies ? <UpdateCookies newCookies={accountData.cookies} /> : null}</>
 		</div>
 	);
 }

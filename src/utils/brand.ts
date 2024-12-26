@@ -36,6 +36,23 @@ export const getBrandById = async (id) => {
 };
 
 /*
+Get brand items by ID
+param: id - brand ID
+return: response object
+*/
+export const getBrandItemsById = async (id) => {
+	try {
+		const response = await fetch(`${API_URL}/brands/${id}/items`, {
+			method: "GET",
+		});
+
+		return response;
+	} catch (error) {
+		return new Response({ error: "Brand data fetch error" }, { status: 400 });
+	}
+};
+
+/*
 Create a brand
 param: name - brand name
 param: bio - brand bio
