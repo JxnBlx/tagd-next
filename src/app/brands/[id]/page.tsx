@@ -2,7 +2,7 @@ import { getBrandById, getBrandItemsById } from "../../../utils/brand";
 import { redirect } from "next/navigation";
 import globalconfig from "../../../../globalconfig.js";
 import { Suspense } from "react";
-import { Items } from "./Items";
+import { Items } from "../../../components/item/Items";
 
 async function BrandInfo({ id }) {
 	"use server";

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import globalconfig from "../../../globalconfig";
 
 export function Items({ initialItems }) {
 	const [items, setItems] = useState(initialItems);
@@ -11,7 +12,7 @@ export function Items({ initialItems }) {
 		<>
 			{items.map((item) => {
 				return (
-					<div key={item.id} onClick={() => router.push(`${config.pages.items}/${item.id}`)}>
+					<div key={item.id} onClick={() => router.push(`${globalconfig.pages.items}/${item.id}`)}>
 						<img src={item.image_link} alt={`${item.name} logo`} />
 						<h2>{item.name}</h2>
 					</div>

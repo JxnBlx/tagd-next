@@ -1,26 +1,40 @@
-const api_config = require('../config.js');
+import globalconfig from "../../globalconfig";
 
-const API_URL = api_config.API_URL;
-
+const API_URL = globalconfig.API_URL;
 
 /*
     Get all items
     return: response object
 */
 export const getItems = async () => {
-    try {
-        const response = await fetch(`${API_URL}/items/all`, {
-            method: 'GET',
-            credentials: 'include', // Include cookies in the request
-        });
+	try {
+		const response = await fetch(`${API_URL}/items/all`, {
+			method: "GET",
+			credentials: "include", // Include cookies in the request
+		});
 
-        return response;
+		return response;
+	} catch (error) {
+		return new Response(JSON.stringify({ error: error }), { status: 400 });
+	}
+};
 
-    } catch (error) {
-        console.error('Item data fetch error:', error);
-        throw error('Item data fetch error');
-    }
-}
+/* 
+    Get item's posts
+    param: id - item ID
+    return: response object
+*/
+export const getItemPosts = async (id) => {
+	try {
+		const response = await fetch(`${API_URL}/items/${id}/posts`, {
+			method: "GET",
+		});
+
+		return response;
+	} catch (error) {
+		return new Response(JSON.stringify({ error: error }), { status: 400 });
+	}
+};
 
 /*
     Get item by ID
@@ -28,19 +42,18 @@ export const getItems = async () => {
     return: response object
 */
 export const getItemById = async (id) => {
-    try {
-        const response = await fetch(`${API_URL}/items/${id}`, {
-            method: 'GET',
-            credentials: 'include', // Include cookies in the request
-        });
+	try {
+		const response = await fetch(`${API_URL}/items/${id}`, {
+			method: "GET",
+			credentials: "include", // Include cookies in the request
+		});
 
-        return response;
-
-    } catch (error) {
-        console.error('Item data fetch error:', error);
-        throw error('Item data fetch error');
-    }
-}
+		return response;
+	} catch (error) {
+		console.error("Item data fetch error:", error);
+		throw error("Item data fetch error");
+	}
+};
 
 /*
     Create an item
@@ -52,23 +65,22 @@ export const getItemById = async (id) => {
     return: response object
 */
 export const createItem = async (name, description, purchase_link, image_link, brand_id) => {
-    try {
-        const response = await fetch(`${API_URL}/items`, {
-            method: 'POST',
-            credentials: 'include', // Include cookies in the request
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ "name":name, "description":description, "purchase_link":purchase_link, "image_link":image_link, "brand_id":brand_id }),
-        });
+	try {
+		const response = await fetch(`${API_URL}/items`, {
+			method: "POST",
+			credentials: "include", // Include cookies in the request
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ name: name, description: description, purchase_link: purchase_link, image_link: image_link, brand_id: brand_id }),
+		});
 
-        return response;
-
-    } catch (error) {
-        console.error('Item creation error:', error);
-        throw error('Item creation error');
-    }
-}
+		return response;
+	} catch (error) {
+		console.error("Item creation error:", error);
+		throw error("Item creation error");
+	}
+};
 
 /*
     Edit an item
@@ -81,20 +93,17 @@ export const createItem = async (name, description, purchase_link, image_link, b
     return: response object
 */
 export const editItem = async (id, name, description, purchase_link, image_link, brand_id) => {
-    try {
-        const response = await fetch(`${API_URL}/items/${id}`, {
-            method: 'PUT',
-            credentials: 'include', // Include cookies in the request
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ "name":name, "description":description, "purchase_link":purchase_link, "image_link":image_link, "brand_id":brand_id }),
-        });
-
-        return response;
-
-    } catch (error) {
-        console.error('Item edit error:', error);
-        throw error('Item edit error');
-    }
-}
+	try {
+		const response = await fetch(`${API_URL}/items/${id}`, {
+			method: "PUT",
+			credentials: "include", // Include cookies in the request
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ name: name, description: description, purchase_link: purchase_link, image_link: image_link, brand_id: brand_id }),
+		});
+		return response;
+	} catch (error) {
+		return new Response(JSON.stringify({ error: error }), { status: 400 });
+	}
+};

@@ -26,7 +26,7 @@ export default async function EditBrandPage({ params }) {
 		if (!resp.ok) {
 			return { message: "Error editing brand" + resp.status };
 		}
-		redirect(`/brands/${id}`);
+		redirect(globalconfig.pages.brands + "/" + id);
 	}
 
 	return <EditBrandForm brandData={brandData} action={submitEdit} />;
