@@ -45,7 +45,6 @@ export const getBrandItemsById = async (id) => {
 		const response = await fetch(`${API_URL}/brands/${id}/items`, {
 			method: "GET",
 		});
-
 		return response;
 	} catch (error) {
 		return new Response({ error: "Brand data fetch error" }, { status: 400 });

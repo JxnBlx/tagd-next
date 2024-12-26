@@ -1,10 +1,11 @@
-import { getBrandById } from "../../../utils/brand";
+import { getBrandById, getBrandItemsById } from "../../../utils/brand";
 import { redirect } from "next/navigation";
 import globalconfig from "../../../../globalconfig.js";
 import { Suspense } from "react";
 import { Items } from "./Items";
 
 async function BrandInfo({ id }) {
+	"use server";
 	const response = await getBrandById(id);
 	const brand = await response.json();
 
@@ -33,12 +34,29 @@ async function BrandInfo({ id }) {
 	);
 }
 
+async function ItemsList({ id }) {
+	"use server";
+	const response = await getBrandItemsById(id);
+
+	if (!response.ok) {
+		console.error("Error fetching items for brand", id);
+		return <p>No items found</p>;
+	}
+	const initialItems = await response.json();
+
+	return <Items initialItems={initialItems} />;
+}
+
 export default async function BrandPage({ params }) {
 	const { id } = await params;
 	return (
-		<Suspense fallback={<div>Loading...</div>}>
-			<BrandInfo id={id} />
-			<Items id={id} />
-		</Suspense>
+		<>
+			<Suspense fallback={<div>Loading...</div>}>
+				<BrandInfo id={id} />
+			</Suspense>
+			<Suspense fallback={<div>Loading...</div>}>
+				<ItemsList id={id} />
+			</Suspense>
+		</>
 	);
 }
