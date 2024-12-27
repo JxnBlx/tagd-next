@@ -6,7 +6,7 @@ const initialState = {
 	message: "",
 };
 
-export default function EditItemForm({ itemData, action }) {
+export default function EditItemForm({ itemData, action, title }) {
 	const [name, setName] = useState("");
 	const [description, setDescription] = useState("");
 	const [purchaseLink, setPurchaseLink] = useState("");
@@ -17,17 +17,19 @@ export default function EditItemForm({ itemData, action }) {
 	const [state, formAction, pending] = useActionState(action, initialState);
 
 	useEffect(() => {
-		setName(itemData.name);
-		setDescription(itemData.description);
-		setPurchaseLink(itemData.purchase_link);
-		setImageLink(itemData.image_link);
-		setBrandId(itemData.brand_id);
+		if (itemData.name) {
+			setName(itemData.name);
+			setDescription(itemData.description);
+			setPurchaseLink(itemData.purchase_link);
+			setImageLink(itemData.image_link);
+			setBrandId(itemData.brand_id);
+		}
 		setBrands(itemData.brands);
 	}, [itemData]);
 
 	return (
 		<div>
-			<h1>Edit Item</h1>
+			<h1>{title}</h1>
 			<form action={formAction}>
 				<div>
 					<label htmlFor="name">Name:</label>

@@ -1,22 +1,13 @@
-import EditItemForm from "./EditItemForm";
+import EditItemForm from "../[id]/edit/EditItemForm";
 import { redirect } from "next/navigation";
-import { getItemById, editItem } from "@/utils/item";
-import globalconfig from "../../../../../globalconfig";
+import { createItem } from "@/utils/item";
+import globalconfig from "../../../../globalconfig";
 import { getBrands } from "@/utils/brand";
 
-export default async function EditItemPage({ params }) {
-	const { id } = await params;
-
-	const response = await getItemById(id);
-	if (!response.ok) {
-		redirect(globalconfig.pages.items);
-	}
-	const itemData = await response.json();
-
+export default async function CreateItemPage() {
+	const itemData = { brands: [] };
 	const resp = await getBrands();
-	if (!resp.ok) {
-		itemData.brands = [];
-	} else {
+	if (resp.ok) {
 		itemData.brands = await resp.json();
 	}
 
@@ -30,19 +21,20 @@ export default async function EditItemPage({ params }) {
 			brand_id: formData.get("brand_id") as string,
 		};
 
-		const resp = await editItem(
-			id,
+		const resp = await createItem(
 			rawFormData.name,
 			rawFormData.description,
 			rawFormData.purchase_link,
 			rawFormData.image_link,
 			rawFormData.brand_id
 		);
+
 		if (!resp.ok) {
-			return { message: "Error editing item" + resp.status };
+			return { message: "Error creating item" + resp.status };
 		}
+		const { id } = await resp.json();
 		redirect(globalconfig.pages.items + "/" + id);
 	}
 
-	return <EditItemForm itemData={itemData} action={submitEdit} title="Edit Item" />;
+	return <EditItemForm itemData={itemData} action={submitEdit} title="Create Item" />;
 }
