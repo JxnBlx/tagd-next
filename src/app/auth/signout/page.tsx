@@ -13,6 +13,7 @@ export default function SignOutPage() {
 			// Delete cookies using document.cookie
 			document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
 			document.cookie = "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
+			document.cookie = "tokenExpiry=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
 
 			await handleLogout();
 			router.push(globalconfig.pages.login);

@@ -1,26 +1,31 @@
-const api_config = require('../config.js');
+import { cookies } from "next/headers";
+import globalconfig from "../../globalconfig";
 
-const API_URL = api_config.API_URL;
+const API_URL = globalconfig.API_URL;
 
+async function makeCookieHeader() {
+	const cookieStore = await cookies();
+	return cookieStore
+		.getAll()
+		.map((cookie) => `${cookie.name}=${cookie.value}`)
+		.join("; ");
+}
 
 /*
     Get all posts
     return: response object
 */
 export const getPosts = async () => {
-    try {
-        const response = await fetch(`${API_URL}/posts/all`, {
-            method: 'GET',
-            credentials: 'include', // Include cookies in the request
-        });
+	try {
+		const response = await fetch(`${API_URL}/posts/all`, {
+			method: "GET",
+		});
 
-        return response;
-
-    } catch (error) {
-        console.error('Post data fetch error:', error);
-        throw error('Post data fetch error');
-    }
-}
+		return response;
+	} catch (error) {
+		return new Response({ error: "Post data fetch error" + error }, { status: 500 });
+	}
+};
 
 /*
     Get post by ID
@@ -28,19 +33,16 @@ export const getPosts = async () => {
     return: response object
 */
 export const getPostById = async (id) => {
-    try {
-        const response = await fetch(`${API_URL}/posts/${id}`, {
-            method: 'GET',
-            credentials: 'include', // Include cookies in the request
-        });
+	try {
+		const response = await fetch(`${API_URL}/posts/${id}`, {
+			method: "GET",
+		});
 
-        return response;
-
-    } catch (error) {
-        console.error('Post data fetch error:', error);
-        throw error('Post data fetch error');
-    }
-}
+		return response;
+	} catch (error) {
+		return new Response({ error: "Post data fetch error" + error }, { status: 500 });
+	}
+};
 
 /*
     Create a post
@@ -49,23 +51,21 @@ export const getPostById = async (id) => {
     return: response object
 */
 export const createPost = async (image_url, description, tags) => {
-    try {
-        const response = await fetch(`${API_URL}/posts`, {
-            method: 'POST',
-            credentials: 'include', // Include cookies in the request
-            headers: {
-                'Content-Type': 'application/json', 
-            },
-            body: JSON.stringify({ "image_url": image_url, "description": description, "tags": tags }),
-        });
+	try {
+		const response = await fetch(`${API_URL}/posts`, {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Cookie: await makeCookieHeader(),
+			},
+			body: JSON.stringify({ image_url: image_url, description: description, tags: tags }),
+		});
 
-        return response;
-
-    } catch (error) {
-        console.error('Post creation error:', error);
-        throw error('Post creation error');
-    }
-}
+		return response;
+	} catch (error) {
+		return new Response({ error: "Post creation error" + error }, { status: 500 });
+	}
+};
 
 /*
     Edit a post
@@ -74,20 +74,18 @@ export const createPost = async (image_url, description, tags) => {
     return: response object
 */
 export const editPost = async (id, description, tags) => {
-    try {
-        const response = await fetch(`${API_URL}/posts/${id}`, {
-            method: 'PUT',
-            credentials: 'include', // Include cookies in the request
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ "id":id, "description": description, "tags":tags }),
-        });
+	try {
+		const response = await fetch(`${API_URL}/posts/${id}`, {
+			method: "PUT",
+			headers: {
+				"Content-Type": "application/json",
+				Cookie: await makeCookieHeader(),
+			},
+			body: JSON.stringify({ id: id, description: description, tags: tags }),
+		});
 
-        return response;
-
-    } catch (error) {
-        console.error('Post edit error:', error);
-        throw error('Post edit error');
-    }
-}
+		return response;
+	} catch (error) {
+		return new Response({ error: "Post edit error" + error }, { status: 500 });
+	}
+};

@@ -33,6 +33,12 @@ export default async function AuthPage() {
 					sameSite: "lax", // Changed to Lax for HTTP
 					maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 				});
+				cookieStore.set("tokenExpiry", JSON.stringify(Date.now() + 60 * 60 * 1000), {
+					httpOnly: true,
+					secure: false, // Changed to false for HTTP
+					sameSite: "lax", // Changed to Lax for HTTP
+					maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+				});
 			} else {
 				const data = await resp.json();
 				return { message: data.error };

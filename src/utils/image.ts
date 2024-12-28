@@ -1,26 +1,35 @@
-const api_config = require('../config.js');
+import { cookies } from "next/headers";
+import globalconfig from "../../globalconfig";
 
-const API_URL = api_config.API_URL;
+const API_URL = globalconfig.API_URL;
+
+async function makeCookieHeader() {
+	const cookieStore = await cookies();
+	return cookieStore
+		.getAll()
+		.map((cookie) => `${cookie.name}=${cookie.value}`)
+		.join("; ");
+}
 
 /*
     Get signed URL for image upload
     return: response object
 */
 export const getSignedURL = async () => {
-    try{
-        const response = await fetch(`${API_URL}/image/signed-url`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-        'Content-Type': 'application/json',
-        },
-    });
-        return response;
-    } catch (error) {
-        console.error('Image fetch error:', error);
-        throw error('Image fetch error');
-    }
-}
+	try {
+		const response = await fetch(`${API_URL}/image/signed-url`, {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+				Cookie: await makeCookieHeader(),
+			},
+		});
+		return response;
+	} catch (error) {
+		console.log(error);
+		return new Response({ error: "Signed URL fetch error" + error }, { status: 500 });
+	}
+};
 
 /*
     Upload image to url
@@ -29,13 +38,16 @@ export const getSignedURL = async () => {
     return: response object
 */
 export const uploadImage = async (signedURL, file) => {
-    const response = await fetch(signedURL, {
-        method: 'PUT',
-        body: file,
-    });
+	const response = await fetch(signedURL, {
+		method: "PUT",
+		body: file,
+		headers: {
+			Cookie: await makeCookieHeader(),
+		},
+	});
 
-    return response;
-}
+	return response;
+};
 
 /*
     Make image source url from path
@@ -43,5 +55,5 @@ export const uploadImage = async (signedURL, file) => {
     return: string = image source url
 */
 export const makeImageUrl = (path) => {
-    return `https://sjqzyhiksxfkrccmzyyx.supabase.co/storage/v1/object/public/post-images/${path}`;
-}
+	return `https://sjqzyhiksxfkrccmzyyx.supabase.co/storage/v1/object/public/post-images/${path}`;
+};

@@ -13,10 +13,7 @@ async function AccountData() {
 	if (res.status === 404) {
 		redirect(globalconfig.pages.account + "/edit");
 	} else if (!res.ok) {
-		setTimeout(() => {
-			redirect(globalconfig.pages.signout);
-		}, 2000);
-		return (await res.json()).error;
+		redirect(globalconfig.pages.signout);
 	}
 
 	return (
