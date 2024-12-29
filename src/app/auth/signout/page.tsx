@@ -22,5 +22,13 @@ export default function SignOutPage() {
 		logout();
 	}, [router]);
 
-	return <div>Signing out...</div>;
+	return (
+		<div className="min-h-screen flex items-center justify-center bg-gray-50/50">
+			<div className="w-full max-w-[400px] mx-auto px-6 text-center">
+				<div className="flex flex-col items-center gap-4">
+					<p className="text-sm text-gray-500 font-light">Signing out...</p>
+				</div>
+			</div>
+		</div>
+	);
 }

@@ -49,5 +49,5 @@ export default async function AuthPage() {
 		redirect(globalconfig.pages.account);
 	}
 
-	return <AuthForm type={"Login"} action={login} />;
+	return <AuthForm mode={"signin"} action={login} />;
 }
