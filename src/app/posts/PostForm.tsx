@@ -24,8 +24,8 @@ export default function PostForm({ postData, action, title }) {
 	useEffect(() => {
 		if (postData) {
 			setDescription(postData.description);
-			setImageUrl(postData.imageUrl); // Set the image URL if provided in info
-			setTags(postData.tags);
+			setImageUrl(postData.image_url); // Set the image URL if provided in info
+			setTags(postData.tags.map((tag) => ({ x: tag.position_x, y: tag.position_y, itemId: tag.item_id })));
 			setButton("Save");
 		} else {
 			setButton("Post");
