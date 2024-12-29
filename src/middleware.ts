@@ -32,19 +32,19 @@ export async function middleware(request: NextRequest) {
 	}
 
 	// Redirect non-logged-in users to login
-	if (request.nextUrl.pathname.match(/\/account\/*/) && !request.cookies.get("accessToken")) {
+	if (request.nextUrl.pathname.match(/\/account\/*/) && !request.cookies.get("accessToken") && !request.cookies.get("refreshToken")) {
 		const response = NextResponse.redirect(new URL(globalconfig.pages.login, request.url));
 		response.headers.set("x-middleware-cache", "no-cache");
 		return response;
 	}
 
 	// Handle token refresh for create/edit pages
-	if (request.nextUrl.pathname.match(/\/(create|edit)$/) && request.cookies.get("accessToken")) {
+	if (request.nextUrl.pathname.match(/\/(create|edit|account)$/) && request.cookies.get("refreshToken")) {
 		try {
 			const tokenExpiryString = request.cookies.get("tokenExpiry")?.value;
 			const tokenExpiry = tokenExpiryString ? parseInt(tokenExpiryString) : 0;
 
-			if (tokenExpiry < Date.now() + 5 * 60 * 1000) {
+			if (tokenExpiry < Date.now() + 5 * 60 * 1000 || !request.cookies.get("accessToken")) {
 				const response = await refreshToken();
 
 				if (!response.ok) {
@@ -89,5 +89,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-	matcher: ["/auth/signup", "/auth/login", "/account/:path*", "/(.*)/create", "/(.*)/edit"],
+	matcher: ["/auth/signup", "/auth/login", "/account/:path*", "/(.*)/create", "/(.*)/edit", "/account"],
 };

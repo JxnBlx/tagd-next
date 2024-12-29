@@ -1,22 +1,35 @@
-const api_config = require('../config.js');
+import globalconfig from "../../globalconfig";
 
-const API_URL = api_config.API_URL;
+const API_URL = globalconfig.API_URL;
 
 /*
-    Get user profile
+    Get user data
     return: response object
 */
-export const getUserProfile = async (username) => {
-    try {
-        const response = await fetch(`${API_URL}/user/${username}`, {
-            method: 'GET',
-            credentials: 'include', // Include cookies in the request
-        });
+export const getUserInfo = async (username) => {
+	try {
+		const response = await fetch(`${API_URL}/user/${username}/info`, {
+			method: "GET",
+		});
 
-        return response;
+		return response;
+	} catch (error) {
+		return new Response({ message: "Error fetching user data" }, { status: 500 });
+	}
+};
 
-    } catch (error) {
-        console.error('User profile fetch error:', error);
-        throw error('User profile fetch error');
-    }
-}
+/*
+    Get user posts
+    return: response object
+*/
+export const getUserPosts = async (username) => {
+	try {
+		const response = await fetch(`${API_URL}/user/${username}/posts`, {
+			method: "GET",
+		});
+
+		return response;
+	} catch (error) {
+		return new Response({ message: "Error fetching user posts" }, { status: 500 });
+	}
+};
