@@ -39,14 +39,15 @@ export default async function AuthPage() {
 					sameSite: "lax", // Changed to Lax for HTTP
 					maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
 				});
+
+				return { success: true };
 			} else {
 				const data = await resp.json();
-				return { message: data.error };
+				return { message: data };
 			}
 		} catch (error) {
-			return { message: "An error occurred during login: " + JSON.stringify(error) };
+			return { message: "An error occurred during login: " + error };
 		}
-		redirect(globalconfig.pages.account);
 	}
 
 	return <AuthForm mode={"signin"} action={login} />;

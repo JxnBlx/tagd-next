@@ -1,17 +1,18 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import globalconfig from "../../../globalconfig";
+import { useAuthStore } from "@/stores/authStore";
+import { useRouter } from "next/navigation";
 
 export default function Header() {
-	const [isAuthenticated, setIsAuthenticated] = useState(false);
+	const router = useRouter();
+	const { isAuthenticated } = useAuthStore();
 
-	useEffect(() => {
-		const hasToken = document.cookie.includes("accessToken");
-		setIsAuthenticated(hasToken);
-	}, []);
+	const handleAccountClick = () => {
+		router.push(globalconfig.pages.account);
+	};
 
 	return (
 		<header className="fixed top-0 left-0 right-0 z-50">
@@ -23,35 +24,19 @@ export default function Header() {
 				<nav className="flex gap-4">
 					{!isAuthenticated ? (
 						<>
-							<Button
-								variant="secondary"
-								size="default"
-								onClick={() => {
-									window.location.href = globalconfig.pages.login;
-								}}
-							>
+							<Button variant="secondary" size="default" onClick={() => router.push(globalconfig.pages.login)}>
 								Login
 							</Button>
-							<Button
-								variant="primary"
-								size="default"
-								onClick={() => {
-									window.location.href = globalconfig.pages.signup;
-								}}
-							>
+							<Button variant="primary" size="default" onClick={() => router.push(globalconfig.pages.signup)}>
 								Sign up
 							</Button>
 						</>
 					) : (
-						<Button
-							variant="outline"
-							size="default"
-							onClick={() => {
-								window.location.href = globalconfig.pages.account;
-							}}
-						>
-							Account
-						</Button>
+						<>
+							<Button variant="outline" size="default" onClick={handleAccountClick}>
+								Account
+							</Button>
+						</>
 					)}
 				</nav>
 			</div>

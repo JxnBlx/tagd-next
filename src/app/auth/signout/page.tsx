@@ -4,23 +4,31 @@ import { handleLogout } from "@/utils/auth";
 import globalconfig from "../../../../globalconfig";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/stores/authStore"; // Import the auth store
 
 export default function SignOutPage() {
 	const router = useRouter();
+	const logout = useAuthStore((state) => state.logout); // Get logout from store
 
 	useEffect(() => {
-		const logout = async () => {
-			// Delete cookies using document.cookie
+		const performLogout = async () => {
+			// Clear cookies
 			document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
 			document.cookie = "refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
 			document.cookie = "tokenExpiry=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
 
+			// Call API logout
 			await handleLogout();
+
+			// Clear Zustand store state
+			logout();
+
+			// Redirect to login
 			router.push(globalconfig.pages.login);
 		};
 
-		logout();
-	}, [router]);
+		performLogout();
+	}, [router, logout]);
 
 	return (
 		<div className="min-h-screen flex items-center justify-center bg-gray-50/50">

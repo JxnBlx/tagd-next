@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import globalconfig from "../../../../globalconfig";
 import { Suspense } from "react";
 import EditAccountForm from "./EditAccountForm";
+import { AccountLoadingFallback } from "../page";
 
 async function submitAccountData(prevState: any, formData: FormData) {
 	"use server";
@@ -39,7 +40,7 @@ export default function EditAccountPage() {
 	return (
 		<>
 			<AccountPageHeader text="Edit Account" />
-			<Suspense fallback={<div>Loading account data...</div>}>
+			<Suspense fallback={<AccountLoadingFallback />}>
 				<EditAccountData />
 			</Suspense>
 		</>

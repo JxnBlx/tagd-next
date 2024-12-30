@@ -1,4 +1,5 @@
 // components/ui/Button.tsx
+"use client";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Loading } from "@icon-park/react";
 

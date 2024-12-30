@@ -75,8 +75,8 @@ export const editAccount = async (username: string, bio: string) => {
 					.join("; "),
 			},
 			body: JSON.stringify({ username: username, bio: bio }),
+			cache: "no-store",
 		});
-
 		return response;
 	} catch (error) {
 		console.error("Account data fetch error:", error);

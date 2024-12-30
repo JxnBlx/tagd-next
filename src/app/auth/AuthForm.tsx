@@ -1,15 +1,18 @@
 "use client";
 import React, { useState, useEffect, useActionState } from "react";
 import globalconfig from "../../../globalconfig";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { useAuthStore } from "@/stores/authStore";
 
 interface State {
 	message: string;
+	success: boolean;
 }
 
 const initialState: State = {
 	message: "",
+	success: false,
 };
 
 interface AuthFormProps {
@@ -22,6 +25,8 @@ export function AuthForm({ mode = "signin", action }: AuthFormProps) {
 	const emailParam = searchParams.get("u") || "";
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
+	const router = useRouter();
+	const login = useAuthStore((state) => state.login);
 
 	const [state, formAction, pending] = useActionState<State, FormData>(action, initialState);
 
@@ -30,6 +35,13 @@ export function AuthForm({ mode = "signin", action }: AuthFormProps) {
 			setEmail(emailParam);
 		}
 	}, [emailParam]);
+
+	useEffect(() => {
+		if (state.success) {
+			login();
+			router.push(globalconfig.pages.account);
+		}
+	}, [state, router, login]);
 
 	return (
 		<div className="flex min-h-screen items-center justify-center bg-gray-50">
@@ -92,7 +104,7 @@ export function AuthForm({ mode = "signin", action }: AuthFormProps) {
 					{state?.message && <p className="text-sm text-red-500 text-center font-light ">{state.message}</p>}
 
 					<Button variant="primary" size="lg" className="w-full" type="submit" isLoading={pending}>
-						{mode === "signin" ? "Sign In" : "Create Account"}
+						{mode === "signin" ? "Log In" : "Create Account"}
 					</Button>
 				</form>
 
@@ -106,7 +118,7 @@ export function AuthForm({ mode = "signin", action }: AuthFormProps) {
 								window.location.href = mode === "signin" ? globalconfig.pages.signup : globalconfig.pages.login;
 							}}
 						>
-							{mode === "signin" ? "Sign up" : "Sign in"}
+							{mode === "signin" ? "Sign up" : "Log in"}
 						</Button>
 					</p>
 				</div>
